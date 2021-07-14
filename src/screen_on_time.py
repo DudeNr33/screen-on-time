@@ -1,5 +1,14 @@
+#! /usr/bin/python
+"""
+Copyright 2021 Andreas Finkler
+
+This small script parses the log output of pmset to calculate how long the laptop was actively used since it
+was last unplugged from the AC.
+"""
+
 import subprocess
 import re
+import sys
 from datetime import datetime
 
 timestamp = r"(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})\s[+-]\d{4}"
@@ -8,7 +17,11 @@ charge_on_ac = re.compile(timestamp + "\s+\w+\s+.*Using AC \(Charge:(?P<charge>\
 
 timestamp_format = "%Y-%m-%d %H:%M:%S"
 
-pmset_log = str(subprocess.check_output(["pmset", "-g", "log"]), "utf-8")
+raw_output = subprocess.check_output(["pmset", "-g", "log"])
+if sys.version_info.major >= 3:
+    pmset_log = str(raw_output, "utf-8")
+else:
+    pmset_log = raw_output
 
 last_charge_timestamp, last_charge_value = charge_on_ac.findall(pmset_log)[-1]
 all_times = display_switched.findall(pmset_log)
@@ -29,4 +42,4 @@ for entry in display_times:
     current_state = entry[-1]
 # current time
 durations.append((datetime.now() - last_on).total_seconds())
-print("Last charge to", last_charge_value, "%, actively used for", sum(durations) / 60 / 60, "hours")
+print("Last charge was to {}%, since then actively used for {:.2f} hours".format(last_charge_value, sum(durations) / 60 / 60))

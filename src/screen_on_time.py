@@ -128,7 +128,7 @@ def main():
         "Used {:>3}% of battery during {:>3}h {:>2}min of sleep".format(
             total_consumption_with_display_off,
             int(total_time_with_display_off / 3600),
-            int(total_time_with_display_on % 3600 / 60),
+            int(total_time_with_display_off % 3600 / 60),
         )
     )
 

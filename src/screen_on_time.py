@@ -20,7 +20,7 @@ def main():
     start_index = start_charge = start_timestamp = start_display_state = None
     charge_regex = re.compile(
         TIMESTAMP_REGEX
-        + r"\s+\w+\s+.*Using (?P<type>AC|Batt|BATT) \(Charge:\s*(?P<charge>\d+)%*\)"
+        + r"\s+\w+\s+.*Using (?P<type>AC|Batt|BATT)\s*\(Charge:\s*(?P<charge>\d+)%*\)"
     )
     display_regex = re.compile(
         TIMESTAMP_REGEX + r"\s+\w+\s+Display is turned (?P<state>\w+)"

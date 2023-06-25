@@ -136,12 +136,12 @@ def main():
     print("\nStatistics:")
     print(
         "{:.2f}%/h battery loss during usage".format(
-            total_consumption_with_display_on / (total_time_with_display_on / 3600)
+            total_consumption_with_display_on / (total_time_with_display_on / 3600) if total_time_with_display_on else 0
         )
     )
     print(
         "{:.2f}%/h battery loss during sleep".format(
-            total_consumption_with_display_off / (total_time_with_display_off / 3600)
+            total_consumption_with_display_off / (total_time_with_display_off / 3600) if total_consumption_with_display_off else 0
         )
     )
 

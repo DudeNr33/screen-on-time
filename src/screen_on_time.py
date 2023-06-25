@@ -29,10 +29,22 @@ def main():
     for i, line in enumerate(reversed(pmset_lines)):
         match = charge_regex.match(line)
         if match and match.groupdict()["type"] == "AC":
-            groupdict = match.groupdict()
-            start_index = len(pmset_lines) - i
-            start_charge = int(groupdict["charge"])
-            start_timestamp = convert_timestamp(groupdict["timestamp"])
+            """
+            The last match of an AC log might not always reflect the correct charge level as it might have
+            not logged entries before the power was disconected, for example, when disconecting the power
+            cord when the macbook was sleeping. Thus, it is necessary to find the next BATT entry in the
+            logs which will tell you exactly what the charge was when the laptop was unplugged.
+            """
+            for j, nextLine in enumerate(pmset_lines[-i:]):
+                nextMatch = charge_regex.match(nextLine)
+                if nextMatch and nextMatch.groupdict()["type"].upper() == "BATT":
+                    groupdict = nextMatch.groupdict()
+                    start_index = len(pmset_lines) - i + j - 1
+                    start_charge = int(groupdict["charge"])
+                    start_timestamp = convert_timestamp(groupdict["timestamp"])
+                    break
+            else:
+                continue
             break
     else:
         print("Could not determine when the PC was last unplugged from AC.")
